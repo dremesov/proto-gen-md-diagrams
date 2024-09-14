@@ -46,7 +46,7 @@ func EnumToMermaid(e *Enum) string {
 	for _, v := range e.Values {
 		out += fmt.Sprintf("  %s\n", v.Value)
 	}
-	out += "}"
+	out += "}\n"
 	return out
 }
 
@@ -55,6 +55,9 @@ func MessageToMermaid(m *Message) string {
 	out := fmt.Sprintf("\n%s\nclass %s {\n", m.Comment.ToMermaid(), m.Name)
 	for _, a := range m.Attributes {
 		out += fmt.Sprintf("  %s\n", a.ToMermaid())
+	}
+	for _, o := range m.OneOfs {
+		out += fmt.Sprintf("  %s\n", o.ToMermaid())
 	}
 	out += "}\n"
 
@@ -76,6 +79,14 @@ func MessageToMermaid(m *Message) string {
 		for _, msg := range m.Messages {
 			out += fmt.Sprintf("%s --o `%s`\n", m.Name, msg.Name)
 			out += MessageToMermaid(msg)
+		}
+	}
+
+	// Handle OneOfs Relationships
+	if m.HasOneOfs() {
+		for _, o := range m.OneOfs {
+			out += fmt.Sprintf("%s --o `%s`\n", m.Name, o.Name)
+			out += MessageToMermaid(o.ToMessage())
 		}
 	}
 

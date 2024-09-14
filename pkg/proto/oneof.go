@@ -16,40 +16,38 @@
 
 package proto
 
-// Message represents a message / struct body
-type Message struct {
+// OneOf represents a Proto OneOf type.
+type OneOf struct {
 	*Qualified
 	Attributes []*Attribute
-	Messages   []*Message
-	OneOfs     []*OneOf
-	Enums      []*Enum
 	Reserved   []*Reserved
 }
 
-// NewMessage creates a new message
-func NewMessage() *Message {
-	return &Message{
-		Qualified:  &Qualified{},
+// NewOneOf is the OneOf Constructor
+func NewOneOf(q string, name string, comment Comment) *OneOf {
+	return &OneOf{
+		Qualified: &Qualified{
+			Qualifier: q,
+			Name:      name,
+			Comment:   comment,
+		},
 		Attributes: make([]*Attribute, 0),
-		Messages:   make([]*Message, 0),
-		OneOfs:     make([]*OneOf, 0),
-		Enums:      make([]*Enum, 0),
 		Reserved:   make([]*Reserved, 0),
 	}
 }
 
-func (m *Message) HasAttributes() bool {
-	return len(m.Attributes) > 0
+func (o *OneOf) ToMessage() *Message {
+	return &Message{
+		Qualified:  &Qualified{Qualifier: o.Qualifier, Name: o.Name, Comment: o.Comment},
+		Attributes: o.Attributes,
+		Messages:   []*Message{},
+		OneOfs:     []*OneOf{},
+		Enums:      []*Enum{},
+		Reserved:   o.Reserved,
+	}
 }
 
-func (m *Message) HasMessages() bool {
-	return len(m.Messages) > 0
-}
-
-func (m *Message) HasOneOfs() bool {
-	return len(m.OneOfs) > 0
-}
-
-func (m *Message) HasEnums() bool {
-	return len(m.Enums) > 0
+// ToMermaid implements a Mermaid Syntax per Attribute
+func (o *OneOf) ToMermaid() string {
+	return Join(Space, "+", "OneOf", o.Name)
 }

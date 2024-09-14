@@ -20,26 +20,32 @@ import (
 	"strings"
 )
 
-// MessageVisitor is used for interpreting message text
-type MessageVisitor struct {
+type OneOfVisitor struct {
+	Visitors []Visitor
 }
 
-// CanVisit visits if the line starts with 'message' and ends with an open brace '{'
-func (mv *MessageVisitor) CanVisit(in *Line) bool {
-	return strings.HasPrefix(in.Syntax, "message ") && in.Token == OpenBrace
+// NewOneOfVisitor creates an OneOfVisitor
+func NewOneOfVisitor() *OneOfVisitor {
+	Log.Debug("Initializing OneOfVisitor")
+	out := &OneOfVisitor{Visitors: make([]Visitor, 0)}
+	out.Visitors = append(out.Visitors,
+		&CommentVisitor{},
+		&AttributeVisitor{},
+		&ReservedVisitor{},
+	)
+	return out
 }
 
-// Visit evaluates the current line and parses the message until the closed brace
-// is evaluated.
-func (mv *MessageVisitor) Visit(scanner Scanner, in *Line, namespace string) interface{} {
-	Log.Debugf("Visiting Message: %v\n", in)
+func (ov *OneOfVisitor) CanVisit(in *Line) bool {
+	return strings.HasPrefix(in.Syntax, "oneof ") && in.Token == OpenBrace
+}
 
+func (ov *OneOfVisitor) Visit(scanner Scanner, in *Line, namespace string) interface{} {
+	Log.Debug("Visiting OneOf")
 	values := in.SplitSyntax()
-	out := NewMessage()
+	name := values[1]
 
-	out.Name = values[1]
-	out.Qualifier = Join(Period, namespace, out.Name)
-	out.Comment = in.Comment
+	out := NewOneOf(Join(Period, namespace, name), name, in.Comment)
 
 	var comment = Comment("")
 
@@ -51,25 +57,13 @@ func (mv *MessageVisitor) Visit(scanner Scanner, in *Line, namespace string) int
 		if strings.HasSuffix(line.Token, CloseBrace) {
 			break
 		}
-		for _, visitor := range RegisteredVisitors {
+		for _, visitor := range ov.Visitors {
 			if visitor.CanVisit(line) {
 				rt := visitor.Visit(
 					scanner,
 					line,
 					Join(Period, namespace, out.Name))
 				switch t := rt.(type) {
-				case *OneOf:
-					t.Comment = comment.AddSpace().Append(t.Comment).TrimSpace()
-					out.OneOfs = append(out.OneOfs, t)
-					comment = comment.Clear()
-				case *Message:
-					t.Comment = comment.AddSpace().Append(t.Comment).TrimSpace()
-					out.Messages = append(out.Messages, t)
-					comment = comment.Clear()
-				case *Enum:
-					t.Comment = comment.AddSpace().Append(t.Comment).TrimSpace()
-					out.Enums = append(out.Enums, t)
-					comment = comment.Clear()
 				case *Attribute:
 					if t.IsValid() {
 						t.Comment = comment.AddSpace().Append(t.Comment).TrimSpace()

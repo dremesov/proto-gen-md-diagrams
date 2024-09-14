@@ -1,6 +1,18 @@
 # Package: test.service
 
-<div class="comment"><span></span><br/><span>Copyright 2022 Google LLC</span><br/><span>Licensed under the Apache License, Version 2.0 (the "License");</span><br/><span>you may not use this file except in compliance with the License.</span><br/><span>You may obtain a copy of the License at</span><br/><span> http://www.apache.org/licenses/LICENSE-2.0</span><br/><span>Unless required by applicable law or agreed to in writing, software</span><br/><span>distributed under the License is distributed on an "AS IS" BASIS,</span><br/><span>WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span><br/><span>See the License for the specific language governing permissions and</span><br/><span>limitations under the License.</span><br/><span></span><br/></div>
+> 
+> Copyright 2022 Google LLC
+> Licensed under the Apache License, Version 2.0 (the "License");
+> you may not use this file except in compliance with the License.
+> You may obtain a copy of the License at
+>  http://www.apache.org/licenses/LICENSE-2.0
+> Unless required by applicable law or agreed to in writing, software
+> distributed under the License is distributed on an "AS IS" BASIS,
+> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+> See the License for the specific language governing permissions and
+> limitations under the License.
+> 
+
 
 ## Imports
 
@@ -23,13 +35,22 @@
 
 
 ## Service: LocationService
-<div style="font-size: 12px; margin-top: -10px;" class="fqn">FQN: test.service</div>
+---
 
-<div class="comment"><span></span><br/><span>The LocationService is responsible for CRUD operations of Physical Locations.</span><br/><span></span><br/></div>
+:::info
+FQN: test.service
+:::
+
+
+
+> 
+> The LocationService is responsible for CRUD operations of Physical Locations.
+> 
+
 
 ### LocationService Diagram
 
-```mermaid
+```mermaidjs
 classDiagram
 direction LR
 class LocationService {
@@ -49,6 +70,3 @@ LocationService --o `test.location.PhysicalLocation`
 
 
 
-
-<!-- Created by: Proto Diagram Tool -->
-<!-- https://github.com/GoogleCloudPlatform/proto-gen-md-diagrams -->
