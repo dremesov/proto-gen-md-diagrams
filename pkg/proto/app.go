@@ -20,12 +20,12 @@ const (
 )
 
 func init() {
-	directoryFlag = flag.String("d", ".", "The directoryFlag to read.")
+	directoryFlag = flag.String("d", ".", "The directory to read.")
 	recursiveFlag = flag.Bool("r", true, "Read recursively.")
-	debugFlag = flag.Bool("debugFlag", false, "Enable debugging")
+	debugFlag = flag.Bool("debug", false, "Enable debugging")
 	writeOutputFlag = flag.Bool("w", true, "Enable writing output")
 	visualizeFlag = flag.Bool("v", true, "Enable Visualization")
-	outputFlag = flag.String("o", ".", "Specifies the outputFlag directoryFlag, if not specified, the processor will write markdown in the proto directories.")
+	outputFlag = flag.String("o", ".", "Specifies the output directory, if not specified, the processor will write markdown in the proto directories.")
 }
 
 func debugPackages(packages []*Package, logger *Logger) {

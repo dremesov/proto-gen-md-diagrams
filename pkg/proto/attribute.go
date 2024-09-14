@@ -32,6 +32,18 @@ func (a *Attribute) IsValid() bool {
 	return len(a.Name) > 0 && a.Kind != nil && len(a.Kind) >= 1 && a.Ordinal >= 1
 }
 
+func (a *Attribute) GetLabel() string {
+	label := ""
+	if a.Map {
+		label = "Map"
+	} else if a.Repeated {
+		label = "Repeated"
+	} else if a.Optional {
+		label = "Optional"
+	}
+	return label
+}
+
 // ToMermaid implements a Mermaid Syntax per Attribute
 func (a *Attribute) ToMermaid() string {
 	if a.Repeated {

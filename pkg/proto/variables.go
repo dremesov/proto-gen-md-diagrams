@@ -45,5 +45,7 @@ func init() {
 		&ReservedVisitor{},
 		NewEnumVisitor(),
 		NewAttributeVisitor(),
-		NewServiceVisitor())
+		NewServiceVisitor(),
+		NewOneOfVisitor(),
+	)
 }

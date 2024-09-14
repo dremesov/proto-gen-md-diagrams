@@ -29,7 +29,7 @@ func NewServiceVisitor() *ServiceVisitor {
 }
 
 func (sv *ServiceVisitor) CanVisit(line *Line) bool {
-	return strings.HasPrefix(line.Syntax, "service") && line.Token == OpenBrace
+	return strings.HasPrefix(line.Syntax, "service ") && line.Token == OpenBrace
 }
 
 func (sv *ServiceVisitor) Visit(scanner Scanner, in *Line, namespace string) interface{} {

@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	mermaidClassDiagramTemplate = "### %s Diagram\n\n```mermaid\nclassDiagram\ndirection LR\n%s\n```"
+	mermaidClassDiagramTemplate = "### %s Diagram\n\n```mermaidjs\nclassDiagram\ndirection LR\n%s\n```"
 )
 
 func ToMermaid(title string, rt interface{}) string {
@@ -62,20 +62,25 @@ func MessageToMarkdown(message *Message, visualize bool) (body string, diagram s
 	attributeTable.AddHeader("Field", "Ordinal", "Type", "Label", "Description")
 
 	sort.Slice(message.Attributes, func(i, j int) bool {
-		v := strings.Compare(message.Attributes[i].Name, message.Attributes[j].Name)
-		return v < 0
+		return message.Attributes[i].Ordinal < message.Attributes[j].Ordinal
+		// v := strings.Compare(message.Attributes[i].Name, message.Attributes[j].Name)
+		// return v < 0
 	})
 
 	for _, a := range message.Attributes {
-		label := ""
-		if a.Map {
-			label = "Map"
-		} else if a.Repeated {
-			label = "Repeated"
-		} else if a.Optional {
-		    label = "Optional"
+		attributeTable.Insert(a.Name, strconv.Itoa(a.Ordinal), strings.Join(a.Kind, Comma), a.GetLabel(), a.Comment.ToMarkdownText())
+	}
+
+	for _, o := range message.OneOfs {
+		attributeTable.Insert(o.Name, "", "", "OneOf", o.Comment.ToMarkdownText())
+
+		sort.Slice(o.Attributes, func(i, j int) bool {
+			return o.Attributes[i].Ordinal < o.Attributes[j].Ordinal
+		})
+
+		for _, oa := range o.Attributes {
+			attributeTable.Insert(o.Name+"."+oa.Name, strconv.Itoa(oa.Ordinal), strings.Join(oa.Kind, Comma), oa.GetLabel(), oa.Comment.ToMarkdownText())
 		}
-		attributeTable.Insert(a.Name, strconv.Itoa(a.Ordinal), strings.Join(a.Kind, Comma), label, a.Comment.ToMarkdownText())
 	}
 
 	if visualize {
@@ -89,6 +94,7 @@ func MessageToMarkdown(message *Message, visualize bool) (body string, diagram s
 		body += eBody
 		diagram += eDiagram
 	}
+
 	return body, diagram
 }
 
@@ -168,11 +174,13 @@ func PackageFormatOptions(p *Package) (body string) {
 	return body
 }
 
-const fqn = "<div style=\"font-size: 12px; margin-top: -10px;\" class=\"fqn\">FQN: %s</div>"
+const fqn = `---
 
-const footer = `
-<!-- Created by: Proto Diagram Tool -->
-<!-- https://github.com/GoogleCloudPlatform/proto-gen-md-diagrams -->`
+:::info
+FQN: %s
+:::
+
+`
 
 func PackageToMarkDown(p *Package, visualize bool) string {
 	out := ""
@@ -183,6 +191,6 @@ func PackageToMarkDown(p *Package, visualize bool) string {
 	}
 	out += HandleEnums(p.Enums, visualize)
 	out += HandleMessages(p.Messages, visualize)
-	out = fmt.Sprintf("# Package: %s\n\n%s\n\n%s\n\n%s\n\n%s\n%s\n", p.Name, p.Comment.ToMarkdownBlockQuote(), PackageFormatImports(p), PackageFormatOptions(p), out, footer)
+	out = fmt.Sprintf("# Package: %s\n\n%s\n\n%s\n\n%s\n\n%s\n", p.Name, p.Comment.ToMarkdownBlockQuote(), PackageFormatImports(p), PackageFormatOptions(p), out)
 	return out
 }

@@ -45,11 +45,10 @@ func (c Comment) ToMarkdownText() string {
 
 func (c Comment) ToMarkdownBlockQuote() string {
 	comments := strings.Split(string(c), CommentNewLine)
-	out := "<div class=\"comment\">"
+	out := ""
 	for _, c := range comments {
-		out += fmt.Sprintf("<span>%s</span><br/>", c)
+		out += "> " + c + "\n"
 	}
-	out += "</div>"
 	return out
 }
 

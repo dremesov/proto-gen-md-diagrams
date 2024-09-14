@@ -66,8 +66,18 @@ func (rv *RpcVisitor) Visit(scanner Scanner, in *Line, namespace string) interfa
 	ParseInArgs(values, out)
 	ParseReturnArgs(values, out)
 
+	if in.Token == OpenBrace {
+		rv.ScanOptions(scanner, namespace, out)
+	}
+
+	return out
+}
+
+func (rv *RpcVisitor) ScanOptions(scanner Scanner, namespace string, out *Rpc) {
 	for scanner.Scan() {
 		line := scanner.ReadLine()
+		Log.Debugf("Read new options line in RPC: %s\n", line)
+
 		if strings.HasPrefix(line.Syntax, "option") {
 			optionName := line.Syntax[strings.Index(line.Syntax, "(")+1 : strings.Index(line.Syntax, ")")]
 			optionBody := ""
@@ -90,5 +100,5 @@ func (rv *RpcVisitor) Visit(scanner Scanner, in *Line, namespace string) interfa
 			break
 		}
 	}
-	return out
+
 }
